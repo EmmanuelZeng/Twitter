@@ -1,0 +1,20 @@
+:root {
+  --color-twitter-black: #000000;
+  --color-twitter-text: #D9D9D9;
+  --color-twitter-btn: #1D9BF0;
+  --color-twitter-hover: #161616;
+  --color-twitter-boder-color: #2F3336;
+  --color-twitter-gray: #6E767D;
+  --color-twitter-trends-color: #202327;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}

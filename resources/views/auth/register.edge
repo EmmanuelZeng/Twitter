@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tweeter Clone</title>
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <style>
+        :root {
+            --sand-1: #fdfdfc;
+            --sand-2: #f9f9f8;
+            --sand-3: #f1f0ef;
+            --sand-4: #e9e8e6;
+            --sand-5: #e2e1de;
+            --sand-6: #dad9d6;
+            --sand-7: #cfceca;
+            --sand-8: #bcbbb5;
+            --sand-9: #8d8d86;
+            --sand-10: #82827c;
+            --sand-11: #63635e;
+            --sand-12: #21201c;
+            --twitter-black: #000000;
+            --twitter-text: #D9D9D9;
+            --twitter-btn: #1D9BF0;
+            --twitter-hover: #161616;
+            --twitter-border-color: #2F3336;
+            --twitter-gray: #6E767D;
+            --twitter-light: rgba(110, 118, 125, 0.4);
+            --twitter-trends-color: #202327;
+        }
+
+        /* Masquer la scrollbar pour Chrome, Safari et Opera */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Masquer la scrollbar pour IE, Edge et Firefox */
+        .hide-scrollbar {
+            -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Instrument Sans", "sans-serif"]
+                    },
+                    colors: {
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[var(--twitter-black)] text-white font-sans antialiased">
+    <div class="mx-8">
+        @if(flashMessages.get('error'))
+            @include('components/flashErrorMessage')
+        @end
+        @if(flashMessages.get('success'))
+            @include('components/flashSuccessMessage')
+        @end
+      <div class="grid grid-cols-[1fr_1fr] gap-2">
+        <div class="flex items-center my-24 justify-center">
+            <i class="fa-brands fa-x-twitter text-[400px] font-bold"></i>
+        </div>
+        <div class="flex flex-col gap-4 justify-center w-3/4">
+            <h1 class="text-6xl font-bold">Ca se passe maintenant!</h1>
+            <p class="text-[var(--twitter-gray)] text-3xl">Créez votre compte et partagez vos pensées avec le monde entier</p>
+            <form action="/storeUser" method="POST" class="w-full">
+                {{ csrfField() }}
+                <div class="mb-2">
+                    <input type="text" name="firstName" placeholder="Prénom" class="w-full p-2 rounded-md bg-transparent border-2 border-[var(--twitter-border-color)] outline-none placeholder:text-[var(--twitter-gray)]">
+                </div>
+                <div class="mb-2">
+                    <input type="text" name="name" placeholder="Nom" class="w-full p-2 rounded-md bg-transparent border-2 border-[var(--twitter-border-color)] outline-none placeholder:text-[var(--twitter-gray)]">
+                </div>
+                <div class="mb-2">
+                    <input type="email" name="email" placeholder="email" class="w-full p-2 rounded-md bg-transparent border-2 border-[var(--twitter-border-color)] outline-none placeholder:text-[var(--twitter-gray)]">
+                </div>
+                <div class="mb-2">
+                    <input type="password" name="password" placeholder="Mot de passe" class="w-full p-2 rounded-md bg-transparent border-2 border-[var(--twitter-border-color)] outline-none placeholder:text-[var(--twitter-gray)]">
+                </div>
+                <button class="w-full p-2 rounded-md bg-[var(--twitter-btn)] text-[var(--twitter-text)] font-bold">S'inscrire</button>
+            </form>
+            <p class="text-[var(--twitter-gray)] text-lg">Vous avez déjà un compte ? <a href="/login" class="text-[var(--twitter-btn)] font-bold">Connectez-vous</a></p>
+        </div>
+      </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessage = document.getElementById('flash-message');
+            
+            if (flashMessage) {
+            // Disparaît après 5 secondes (5000ms)
+            setTimeout(() => {
+                flashMessage.classList.add('opacity-0');
+                
+                // Supprime l'élément après la transition
+                setTimeout(() => {
+                flashMessage.remove();
+                }, 500);
+            }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

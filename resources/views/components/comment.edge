@@ -1,0 +1,134 @@
+<!-- Modal -->
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-[36rem] p-8 overflow-y-auto max-h-[90vh]">
+        <form id="comment-form" action="/comment" method="POST" class="w-full">
+            {{ csrfField() }}
+            <input type="hidden" name="postId" id="post-id">
+            <div class="flex flex-col justify-start gap-1">
+                <span onclick="closeModal()" class="text-gray-900 cursor-pointer self-end">X</span>
+                
+                <div id="tweet-content" class="">
+                    <!-- Le contenu du tweet sera chargé ici dynamiquement -->
+                </div>
+                
+                <div class="flex justify-between mt-3">
+                    <div class="flex gap-2">
+                        <div class="w-10 h-10">
+                            <img class="w-full h-full object-cover rounded-full"
+                                 src="https://i.pinimg.com/236x/c4/99/47/c49947e560226c2620863f22d6e65745.jpg" alt="">
+                        </div>
+                        <textarea id="contentComment" name="content" placeholder="Commenter"
+                            class="hide-scrollbar w-full h-auto resize-none bg-transparent border-none outline-none placeholder:text-[var(--twitter-gray)] text-[var(--twitter-gray)]">
+                        </textarea>
+                    </div>
+                    <button class="bg-[var(--twitter-btn)] text-[var(--twitter-text)] font-bold py-1 px-4 rounded-full">commnetr</button>
+                </div>
+
+                <div id="tweet-comment" class="">
+                    <!-- Les commentaires du tweet seront affichés ici -->
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Affichage du modal avec contenu du tweet
+    async function openModal(tweetUrl, tweetId) {
+        document.getElementById('post-id').value = tweetId;
+        document.getElementById("modal").classList.remove("hidden");
+        const tweetContent = document.getElementById("tweet-content");
+        const tweetComment = document.getElementById("tweet-comment")
+        const defaultAvatar = "https://z-p3-scontent.ffih1-2.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png?stp=dst-png_s200x200&_nc_cat=1&ccb=1-7&_nc_sid=b224c7&_nc_eui2=AeGC841sZH8zzBskIuMDE7r6Wt9TLzuBU1Ba31MvO4FTUA4VovmnQhT7OiUGXw8Hul6Rvqfbkxd1O1yzcvTRuKjK&_nc_ohc=pCF_EXqQ5MYQ7kNvwFb7E1v&_nc_oc=Adn_D6LTN1pdIbeyJkgnRM6AfWZg3UOnpmVT7ZNcvT9T7K_cqNRDIZnpmphn9T3lEQM&_nc_pt=5&_nc_zt=24&_nc_ht=z-p3-scontent.ffih1-2.fna&oh=00_AfEYCkRgyR1URQuSWRKQE2UZD5g9Sx4W6ZqWNRAqpS1pMA&oe=6819257A"
+
+        try {
+            const response = await fetch(tweetUrl);
+            const result = await response.json();
+            if (!result.success || !result.data) throw new Error("Tweet non trouvé");
+
+            const tweet = result.data;
+            const user = tweet.user;
+
+            tweetContent.innerHTML = `
+                <div class="flex py-4 px-2 gap-4 border-b-2 border-[var(--twitter-border-color)]">
+                    <div>
+                        <a href="/profile">
+                            <img class="w-10 h-10 object-cover rounded-full"
+                                 src="${user.avatar || defaultAvatar}" 
+                                 alt="Avatar">
+                        </a>
+                    </div>
+                    <div class="flex flex-col gap-4 w-full">
+                        <div class="flex items-center gap-1">
+                            <a href="/profile" class="flex items-center gap-1">
+                                <h2 class="text-md text-gray-800 font-bold">${user.firstName} ${user.name}</h2>
+                                <span class="text-[var(--twitter-gray)]">@${user.handle}</span>
+                            </a>
+                            <span class="text-[var(--twitter-gray)]">• ${new Date(tweet.createdAt).toLocaleDateString('fr-FR')}</span>
+                        </div>
+                        <div class="flex flex-col items-start gap-4">
+                            ${tweet.content ? `<p class="text-md text-gray-900">${tweet.content}</p>` : ''}
+                            ${tweet.medias?.length ? renderMedias(tweet.medias) : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById("contentComment").focus();
+            let commentsHtml = '';
+            if (tweet.comments && tweet.comments.length > 0) {
+                tweet.comments.forEach(comment => {
+                    commentsHtml += `
+                        <div class="flex py-4 px-2 gap-4 border-b-2 border-gray-200">
+                            <div>
+                                <a href="/profile">
+                                    <img class="w-10 h-10 object-cover rounded-full"
+                                        src="${comment.user.avatar || defaultAvatar}" 
+                                        alt="Avatar">
+                                </a>
+                            </div>
+                            <div class="flex flex-col gap-1 w-full">
+                                <div class="flex items-center gap-1">
+                                    <a href="/profile" class="flex items-center gap-1">
+                                        <h2 class="text-md text-gray-800 font-bold">${comment.user.firstName} ${comment.user.name}</h2>
+                                        <span class="text-[var(--twitter-gray)]">@${comment.user.handle}</span>
+                                    </a>
+                                    <span class="text-[var(--twitter-gray)]">• ${new Date(comment.createdAt).toLocaleDateString('fr-FR')}</span>
+                                </div>
+                                <div class="flex flex-col items-start gap-4">
+                                    <p class="text-md text-gray-900">${comment.content}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                commentsHtml = `<p class="text-[var(--twitter-gray)] px-4">Aucun commentaire pour l'instant.</p>`;
+            }
+
+tweetComment.innerHTML = commentsHtml;
+
+        } catch (error) {
+            console.error('Erreur lors du chargement du tweet:', error);
+            tweetContent.innerHTML = `<p class="text-red-500">Impossible de charger le tweet.</p>`;
+        }
+    }
+
+    function renderMedias(medias) {
+        return medias.map(media => {
+            if (media.fileType.startsWith('image')) {
+                return `
+                    <div class="mt-3 w-full h-[450px]">
+                        <img src="/storage/uploads/${media.filePath}" 
+                             alt="${media.filePath}" 
+                             class="w-full h-full object-cover rounded-lg">
+                    </div>
+                `;
+            }
+            return '';
+        }).join('');
+    }
+
+    function closeModal() {
+        document.getElementById("modal").classList.add("hidden");
+    }
+</script>

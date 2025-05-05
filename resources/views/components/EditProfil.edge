@@ -1,0 +1,39 @@
+<!-- Modal -->
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-[36rem] p-8 overflow-y-auto max-h-[90vh]">
+        <form id="comment-form" action="{{route('profileupdate', profile)}}" method="POST" class="w-full">
+            {{ csrfField() }}
+            <div class="flex flex-col justify-start gap-1">
+                <span onclick="closeModal()" class="text-gray-900 cursor-pointer self-end">X</span>
+                <div class="flex flex-col gap-2">
+                    <div class="mb-2">
+                        <input type="text" name="firstName" value="{{auth.user.firstName}}" class="text-gray-700 w-full p-2 rounded-md bg-transparent border-2 border-[var(--twitter-border-color)] outline-none placeholder:text-[var(--twitter-gray)]">
+                    </div>
+                    <div class="mb-2">
+                        <input type="text" name="name" value="{{auth.user.name}}" class="text-gray-700 w-full p-2 rounded-md bg-transparent border-2 border-[var(--twitter-border-color)] outline-none placeholder:text-[var(--twitter-gray)]">
+                    </div>
+                    <div class="mb-2">
+                        <textarea type="text" name="biography" value="{{ auth.user.profile?.biography || '' }}" class="text-gray-700 w-full p-2 rounded-md bg-transparent border-2 border-[var(--twitter-border-color)] outline-none placeholder:text-[var(--twitter-gray)]"></textarea>
+                        </div>
+                    <div class="mb-2">
+                        <input type="text" name="locate" value="{{ auth.user.profile?.locate || '' }}" class="text-gray-700 w-full p-2 rounded-md bg-transparent border-2 border-[var(--twitter-border-color)] outline-none placeholder:text-[var(--twitter-gray)]">
+                    </div>
+                    <div class="mb-2">
+                        <input type="date" name="birthDay" value="{{ auth.user.profile?.birthDay}}" class="text-gray-700 w-full p-2 rounded-md bg-transparent border-2 border-[var(--twitter-border-color)] outline-none placeholder:text-[var(--twitter-gray)]">
+                    </div>
+                    <button class="w-full p-2 rounded-md bg-[var(--twitter-btn)] text-[var(--twitter-text)] font-bold">Modifier</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Affichage du modal avec contenu du tweet
+    async function openModal() {
+        document.getElementById("modal").classList.remove("hidden");
+    }
+    function closeModal() {
+        document.getElementById("modal").classList.add("hidden");
+    }
+</script>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tweeter Clone</title>
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <style>
+        :root {
+            --sand-1: #fdfdfc;
+            --sand-2: #f9f9f8;
+            --sand-3: #f1f0ef;
+            --sand-4: #e9e8e6;
+            --sand-5: #e2e1de;
+            --sand-6: #dad9d6;
+            --sand-7: #cfceca;
+            --sand-8: #bcbbb5;
+            --sand-9: #8d8d86;
+            --sand-10: #82827c;
+            --sand-11: #63635e;
+            --sand-12: #21201c;
+            --twitter-black: #000000;
+            --twitter-text: #D9D9D9;
+            --twitter-btn: #1D9BF0;
+            --twitter-hover: #161616;
+            --twitter-border-color: #2F3336;
+            --twitter-gray: #6E767D;
+            --twitter-light: rgba(110, 118, 125, 0.4);
+            --twitter-trends-color: #202327;
+            --twitter-profile: #d0d9de;
+        }
+
+        /* Masquer la scrollbar pour Chrome, Safari et Opera */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Masquer la scrollbar pour IE, Edge et Firefox */
+        .hide-scrollbar {
+            -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Instrument Sans", "sans-serif"]
+                    },
+                    colors: {
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[var(--twitter-black)] text-white font-sans antialiased">
+    <div class="mx-8">
+      <div class="grid grid-cols-[1fr_3fr_2fr] gap-4">
+        @include('layouts/header.edge')
+        @include('components/EditProfil.edge')
+        <div class="flex flex-col border-r-2 border-l-2 border-[var(--twitter-border-color)]">
+            <div class="flex gap-6 items-center z-10 border-b-2 border-[var(--twitter-border-color)] py-4 px-2 sticky top-0 backdrop-blur-sm">
+                <a href="{{ route('homePage') }}" class="">
+                    <i class="fa-solid fa-arrow-left text-xl"></i>
+                </a>
+                <div class="flex flex-col gap-2">
+                    <span class="text-2xl font-bold"> {{user.firstName}} {{user.name}} </span>
+                    <span class="text-[var(--twitter-gray)]"> {{user.$extras.posts_count}} posts</span>
+                </div>
+            </div>
+            <div class="flex flex-col gap-4">
+                <div class="h-40">
+                    <div class="w-full h-full object-cover bg-[var(--twitter-profile)]"></div>
+                    {{--  <img class="w-full h-full object-cover" src="https://pbs.twimg.com/media/GmQhGTzWwAAosaI?format=jpg&name=small" alt="">  --}}
+                </div>
+                <div class="relative -mt-20 flex flex-col pb-4 px-2">
+                    <div class="flex items-end justify-between w-full gap-2">
+                        <img class="h-32 w-32 rounded-full object-cover border-4 border-[var(--twitter-black)]" src="https://pbs.twimg.com/media/GmQhGTzWwAAosaI?format=jpg&name=small" alt="">
+                        @if(auth.user && user.id === auth.user.id)
+                            <button onclick="openModal()" class="ml-2 bg-transparent border border-white text-white px-4 py-1 rounded-full text-sm">Edit profile</button>
+                        @else
+                            <button class="ml-2 bg-transparent border border-white text-white px-4 py-1 rounded-full text-sm">Follow</button>
+                        @end
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="flex flex-col">
+                            <h1 class="mt-2 text-xl font-bold">{{user.firstName}} {{user.name}}</h1>
+                            <p class="text-gray-500">@ {{user.handle}}</p>
+                        </div>
+                        <div class="">
+                            @if(auth.user && user.id === auth.user.id)
+                                <button class="mt-2 px-4 py-1 text-sm font-medium bg-blue-500 text-white rounded-full">Get verified</button>
+                            @end
+                        </div>
+                    </div>
+                    <p class="mt-2 text-[var(--twitter-gray)]">{{user.profile.biography}}</p>
+                    <div class="flex w-3/4 gap-3 flex-wrap text-[var(--twitter-gray)] mt-2">
+                        @if(user.profile.locate)
+                        <div class="flex items-center gap-1">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>{{user.profile.locate}}</span>
+                        </div> 
+                        @end
+                        <div class="flex items-center gap-1">
+                            <i class="fa-solid fa-birthday-cake"></i>
+                            <span>{{ new Date(user.profile.birthDay).toLocaleDateString('en-US', { month: 'long',day: 'numeric', year: 'numeric' }) }}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <i class="fa-solid fa-calendar"></i>
+                            <span>Joined {{ new Date(user.profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) }}</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center space-x-8 text-[var(--twitter-gray)]">
+                        <span><strong>41</strong> Following</span>
+                        <span><strong>0</strong> Followers</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col py-4 gap-5">
+                <div class="mt-6 px-2 flex justify-around w-full border-b border-[var(--twitter-border-color)]">
+                    <button class="py-2 px-4 text-blue-500 border-b-2 border-blue-500">Posts</button>
+                    <button class="py-2 px-4 text-gray-500">Replies</button>
+                    <button class="py-2 px-4 text-gray-500">Highlights</button>
+                </div>
+                <div class="flex flex-col items-center gap-4">
+                    @each(tweet in user.posts)
+                    <div class="flex py-4 px-2 gap-4 border-b-2 border-[var(--twitter-border-color)]">
+                        <div class="flex">
+                            <a href="{{ route('profilePage', { handle : tweet.user.handle }) }}" class="flex">
+                                <img class="w-10 h-10 object-cover rounded-full" src="{{ imgProfilDefaul }}" alt="">
+                            </a>
+                        </div>
+                        <div class="flex flex-col gap-4 w-full">
+                            <div class="flex items-center gap-1">
+                                <a href="{{ route('profilePage', {handle : tweet.user.handle}) }}" class="flex items-center gap-1">
+                                    <h2 class="text-md font-bold"> {{ tweet.user.firstName }} {{ tweet.user.name }} </h2>
+                                    <i class="fa-solid fa-circle-check" style="color: #2996e1;"></i>
+                                    <span class="text-[var(--twitter-gray)]">@ {{ tweet.user.handle }} </span>
+                                </a>
+                                <span class="text-[var(--twitter-gray)]"> . {{ new Date(tweet.createdAt).toLocaleDateString('fr-FR') }} </span>
+                            </div>
+                            <div class="flex flex-col items-start gap-4">
+                                @if(tweet.content)
+                                    <div>
+                                        <p class="text-md text-[var(--twitter-gray)]">{{ tweet.content }}</p>
+                                    </div>
+                                @endif
+        
+                                @if(tweet.medias)
+                                    @each(media in tweet.medias)
+                                        @if(media.fileType.startsWith('image'))
+                                            <div class="mt-3 w-full h-[450px]">
+                                                <img src="{{ 'storage/uploads/' + media.filePath }}" alt="{{ '/uploads/' + media.filePath }}" class="w-full h-full object-cover rounded-lg">
+                                            </div>
+                                        @endif
+                                        @if(media.fileType.startsWith('video'))
+                                            <div class="mt-3 w-full">
+                                                <video autoplay muted class="w-full h-full rounded-lg">
+                                                    <source src="{{ 'storage/uploads/' + media.filePath }}" type="video/mp4">
+                                                    Votre navigateur ne supporte pas la lecture vidéo.
+                                                </video>
+                                            </div>
+                                        @endif
+                                    @endeach
+                                @endif
+                                <div class="flex items-center gap-16">    
+                                    <div onclick="openModal('{{ route('showTweet', { id: tweet.id }) }}', '{{ tweet.id }}')" class="flex items-center gap-3 cursor-pointer">
+                                        <i class="fa-regular fa-comment text-[var(--twitter-gray)]"></i>
+                                        <span class="text-[var(--twitter-gray)]">{{ tweet.$extras.comments_count }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <form 
+                                            action="{{ tweet.retweets ? route('destroyRetweet', { tweetId: tweet.id }) : route('retweet', { tweetId: tweet.id }) }}" 
+                                            method="POST"
+                                        >
+                                            {{csrfField()}}
+                                            @if(tweet.retweets)
+                                                @method('DELETE')
+                                            @end
+        
+                                            <button type="submit" class="flex items-center gap-1">
+                                                <i class="fa-solid fa-retweet {{ tweet.retweets ? 'text-green-500' : 'text-gray-400' }}"></i>
+                                                <span class="text-[var(--twitter-gray)]">
+                                                    {{ tweet.$extras.retweets_count || 0 }}
+                                                </span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        @let(userLike = tweet.likes.find((like) => like.userId === auth.user.id))
+                                        @let(isLiked = userLike && userLike.status)
+        
+        
+                                        <form action="{{ route('like', { id: tweet.id }) }}" method="POST" style="display: inline;">
+                                            {{ csrfField() }}
+                                            <button type="submit" class="group">
+                                                @if (isLiked)
+                                                    <i class="fas fa-heart text-red-600 group-hover:scale-110 transition duration-150"></i>
+                                                @else
+                                                    <i class="far fa-heart text-gray-500 group-hover:text-red-500 transition duration-150"></i>
+                                                @endif
+                                            </button>
+                                        </form>
+                                        <span class="text-[var(--twitter-gray)]">{{ tweet.likes.filter((like) => like.status).length }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <i class="fa-solid fa-arrow-up-from-bracket text-[var(--twitter-gray)]"></i>
+                                        {{--  <span class="text-[var(--twitter-gray)]"></span>  --}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @end
+                </div>
+            </div>
+        </div>
+        @include('layouts/aside.edge')
+      </div>
+    </div>
+</body>
+</html>
